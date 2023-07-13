@@ -7,5 +7,6 @@ pip3 install torch torchvision torchaudio --index-url https://download.pytorch.o
 pip install -U git+https://github.com/jianfch/stable-ts.git
 pip install pysubs2
 pip install ffmpeg-python
+pip install soundfile
 deactivate
 Write-Host "Install finished! You can start translating now."

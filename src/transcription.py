@@ -1,7 +1,8 @@
+import warnings
+warnings.filterwarnings("ignore", message=".*The 'nopython' keywo*")
 import configparser
 import os
 import pysubs2
-import warnings
 from sys import exit
 from tqdm import tqdm, TqdmWarning
 
@@ -21,10 +22,10 @@ output_path = os.path.abspath(os.path.join(base_path, "..", "output/"))
 input_path = os.path.abspath(os.path.join(base_path, "..", "input/"))
 model_size = config_whisper["Model"]
 whisper_type = config_whisper["Type"]
-use_cuda = bool(config_whisper["CUDA"])
+use_cuda = config_whisper["CUDA"]
 
 # Early exit if CUDA files are missing
-if use_cuda:
+if use_cuda == True:
     if not os.path.exists(os.path.join(base_path, "cublas64_11.dll")):
         exit("ERROR: Missing CUDA files. Please read the README!")
 
@@ -63,6 +64,7 @@ for file in os.listdir(input_path):
 total_files = len(input_file_list)
 current_file = 1
 print(f"Found {total_files} file(s) to process.")
+os.chdir(base_path)
 
 # Setup subtitle styling
 sub_style = pysubs2.SSAStyle(
@@ -79,7 +81,7 @@ sub_style = pysubs2.SSAStyle(
 
 # Main transcription block
 if whisper_type == "stable-ts":
-    if use_cuda:
+    if use_cuda == True:
         model = stable_whisper.load_model(model_size, "cuda")
     else:
         model = stable_whisper.load_model(model_size)
@@ -89,7 +91,7 @@ if whisper_type == "stable-ts":
         print(f"Processing file {current_file} of {total_files} ({base_file_name}):")
 
         # Run the transcription
-        result = model.transcribe(file, language="ja")
+        result = model.transcribe(file, language=config_whisper["Language"], suppress_ts_tokens=False)
 
         # Set output file name based on input file
         file_name = os.path.join(
@@ -98,7 +100,7 @@ if whisper_type == "stable-ts":
         )
 
         # Save the subs
-        subs = pysubs2.load_from_whisper(result)
+        subs = pysubs2.load_from_whisper(stable_whisper.WhisperResult.segments_to_dicts(result))
         subs.styles["Default"] = sub_style
         subs.info["ScaledBorderAndShadow"] = "no"
         subs.save(file_name)
@@ -106,7 +108,7 @@ if whisper_type == "stable-ts":
         current_file += 1
 
 elif whisper_type == "faster-whisper":
-    if use_cuda:
+    if use_cuda == True:
         model = WhisperModel(model_size, device="cuda", compute_type="int8_float16")
     else:
         model = WhisperModel(model_size, device="cpu", compute_type="int8")
@@ -121,10 +123,10 @@ elif whisper_type == "faster-whisper":
         # Run the transcription
         segments, info = model.transcribe(
             file,
-            vad_filter=bool(config_whisper["VAD"]),
+            vad_filter=config_whisper["VAD"],
             beam_size=5,
             language=config_whisper["Language"],
-            condition_on_previous_text=bool(config_whisper["ConditionOnPreviousText"])
+            condition_on_previous_text=config_whisper["ConditionOnPreviousText"]
         )
 
         # Progressbar setup
