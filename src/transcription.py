@@ -91,7 +91,12 @@ if whisper_type == "stable-ts":
         print(f"Processing file {current_file} of {total_files} ({base_file_name}):")
 
         # Run the transcription
-        result = model.transcribe(file, language=config_whisper["Language"], suppress_ts_tokens=False)
+        result = model.transcribe(
+            file,
+            language=config_whisper["Language"],
+            suppress_ts_tokens=False,
+            vad=config_whisper["VAD"]
+        )
 
         # Set output file name based on input file
         file_name = os.path.join(
