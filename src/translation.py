@@ -20,7 +20,7 @@ input_file_list = []
 output_path = os.path.abspath(os.path.join(base_path, "..", "output/"))
 input_path = os.path.abspath(os.path.join(base_path, "..", "input/"))
 translation_server_url = config_sugoi["Server"]
-use_cuda = config_sugoi["CUDA"]
+use_cuda = config_sugoi.getboolean("CUDA")
 
 # Extensions to search for
 extensions = (".mp4",".mkv",".wmv",".mov",".avi",".flv",".webm",".ts",".mpeg2",".mp3",".m4a",".flac",".wav",".wma",".aac",".ogg")

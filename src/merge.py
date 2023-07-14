@@ -49,7 +49,6 @@ for file in input_file_list:
         )
 
         # Determine if we're working with video or audio
-        print(file_base_name)
         if file.endswith(audio_extensions):
             print(f"{file} is audio. Creating video with translation file.")
 

@@ -22,7 +22,7 @@ output_path = os.path.abspath(os.path.join(base_path, "..", "output/"))
 input_path = os.path.abspath(os.path.join(base_path, "..", "input/"))
 model_size = config_whisper["Model"]
 whisper_type = config_whisper["Type"]
-use_cuda = config_whisper["CUDA"]
+use_cuda = config_whisper.getboolean("CUDA")
 
 # Early exit if CUDA files are missing
 if use_cuda == True:
@@ -89,13 +89,14 @@ if whisper_type == "stable-ts":
     for file in input_file_list:
         base_file_name = os.path.basename(file)
         print(f"Processing file {current_file} of {total_files} ({base_file_name}):")
-
+        
         # Run the transcription
         result = model.transcribe(
             file,
             language=config_whisper["Language"],
             suppress_ts_tokens=False,
-            vad=config_whisper["VAD"]
+            vad=config_whisper.getboolean("VAD"),
+            condition_on_previous_text=config_whisper.getboolean("ConditionOnPreviousText")
         )
 
         # Set output file name based on input file
@@ -118,9 +119,6 @@ elif whisper_type == "faster-whisper":
     else:
         model = WhisperModel(model_size, device="cpu", compute_type="int8")
 
-    # Change base path for CUDNN imports
-    os.chdir(base_path)
-
     for file in input_file_list:
         base_file_name = os.path.basename(file)
         print(f"\nProcessing file {current_file} of {total_files} ({base_file_name}):")
@@ -128,10 +126,10 @@ elif whisper_type == "faster-whisper":
         # Run the transcription
         segments, info = model.transcribe(
             file,
-            vad_filter=config_whisper["VAD"],
             beam_size=5,
             language=config_whisper["Language"],
-            condition_on_previous_text=config_whisper["ConditionOnPreviousText"]
+            vad_filter=config_whisper.getboolean("VAD"),
+            condition_on_previous_text=config_whisper.getboolean("ConditionOnPreviousText")
         )
 
         # Progressbar setup

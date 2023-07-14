@@ -1,20 +1,22 @@
-## The following four lines only need to be declared once in your script.
-$yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Yes","Description."
-$no = New-Object System.Management.Automation.Host.ChoiceDescription "&No","Description."
-$options = [System.Management.Automation.Host.ChoiceDescription[]]($yes, $no)
-
-## Use the following each time your want to prompt the use
-$title = "Existing venv folder found" 
-$message = "Would you like to delete your venv folder and start fresh?"
-$result = $host.ui.PromptForChoice($title, $message, $options, 1)
-switch ($result) {
-  0{
-    Write-Host "Deleting venv folder."
-    Remove-Item -LiteralPath ".\venv\" -Force -Recurse
-  }1{
-  }
+if (Test-Path ".\venv") {
+    ## The following four lines only need to be declared once in your script.
+    $yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Yes","Description."
+    $no = New-Object System.Management.Automation.Host.ChoiceDescription "&No","Description."
+    $options = [System.Management.Automation.Host.ChoiceDescription[]]($yes, $no)
+  
+    ## Use the following each time your want to prompt the use
+    $title = "Existing venv folder found" 
+    $message = "Would you like to delete your venv folder and start fresh?"
+    $result = $host.ui.PromptForChoice($title, $message, $options, 1)
+    switch ($result) {
+        0{
+            Write-Host "Deleting venv folder."
+            Remove-Item -LiteralPath ".\venv\" -Force -Recurse
+        }1{
+        }
+    }
 }
-
+  
 python -m venv venv
 .\venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
