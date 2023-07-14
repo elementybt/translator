@@ -33,6 +33,11 @@ for file in os.listdir(input_path):
 total_files = len(input_file_list)
 current_file = 1
 print(f"Found {total_files} file(s) to process.")
+if total_files == 0:
+    exit("No files to process, exiting.")
+
+# For FFmpeg to work if placed in src
+os.chdir(base_path)
 
 # Poll Sugoi Server until available
 print("Attempting to connect to Sugoi Server.")
