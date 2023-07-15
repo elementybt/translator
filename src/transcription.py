@@ -119,7 +119,7 @@ if whisper_type == "stable-ts":
 
 elif whisper_type == "faster-whisper":
     if use_cuda == True:
-        model = WhisperModel(model_size, device="cuda", compute_type="int8_float16")
+        model = WhisperModel(model_size, device="cuda", compute_type="float16")
     else:
         model = WhisperModel(model_size, device="cpu", compute_type="int8")
 
